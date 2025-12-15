@@ -1,0 +1,13 @@
+FROM node:22.12.0-bullseye-slim
+
+ENV APP_PATH /tmp
+
+WORKDIR $APP_PATH
+
+USER root
+
+ADD package.json $APP_PATH/
+
+RUN npm cache clean --force && \
+    npm install -g @angular/cli@20.0.0 && \
+    npm install

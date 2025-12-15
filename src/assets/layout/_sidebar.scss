@@ -1,0 +1,18 @@
+.layout-sidebar {
+  position: fixed;
+  width: 20rem;
+  height: calc(100vh - 8rem);
+  z-index: 999;
+  overflow-y: auto;
+  user-select: none;
+  top: 6rem;
+  left: 2rem;
+  transition:
+          transform var(--layout-section-transition-duration),
+          left var(--layout-section-transition-duration);
+  //background-color: var(--mat-sys-primary-container);
+  //border: 1px solid black;
+  box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;
+  border-radius: var(--content-border-radius);
+  padding: 0.5rem 1.5rem;
+}

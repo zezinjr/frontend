@@ -1,0 +1,47 @@
+# ANCHOR
+.login_gitlab: &login_gitlab
+  before_script:
+    - docker login -u=$CI_REGISTRY_USER -p=$CI_JOB_TOKEN $CI_REGISTRY
+
+# VARIABLES
+variables:
+  DOCKER_IMAGE: docker:28.1.1-dind
+  DOCKER_DRIVER: overlay2
+  FRONTEND_DEPENDENCIES: $CI_REGISTRY_IMAGE:dependencies
+  FRONTEND_DEVELOP: $CI_REGISTRY_IMAGE:develop
+  TYPE_DEPLOY: production
+
+# STAGES
+stages:
+  - image-dependencies
+  - build-image
+
+image-dependencies:
+  <<: *login_gitlab
+  stage: image-dependencies
+  image: $DOCKER_IMAGE
+  services:
+    - $DOCKER_IMAGE
+  script:
+    - docker image build -t $FRONTEND_DEPENDENCIES -f Dockerfile-dependencies .
+    - docker push $FRONTEND_DEPENDENCIES
+    - echo push "Published image $FRONTEND_DEPENDENCIES"
+  when: on_success
+#  rules:
+#    - changes:
+#        paths:
+#          - Dockerfile-dependencies
+#          - package.json
+
+build-image:
+  <<: *login_gitlab
+  stage: build-image
+  image: $DOCKER_IMAGE
+  services:
+    - $DOCKER_IMAGE
+  script:
+    - EXTRA_ARGS="--build-arg image=$FRONTEND_DEPENDENCIES --build-arg environment=$TYPE_DEPLOY"
+    - docker image build -t $FRONTEND_DEVELOP $EXTRA_ARGS .
+    - docker push $FRONTEND_DEVELOP
+    - echo "Publish image $FRONTEND_DEVELOP"
+  when: on_success
